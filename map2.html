@@ -1,209 +1,217 @@
 <!DOCTYPE html>
 <html>
-    <head>
 
-        <script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.13/stitch.js"></script>
-        <style>
-            /* Always set the map height explicitly to define the size of the div
+<head>
+	<link rel="stylesheet" type="text/css" href="/static/css/main.css">
+	<link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+	<script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.13/stitch.js"></script>
+	<style>
+		/* Always set the map height explicitly to define the size of the div
                    * element that contains the map. */
-            #map {
-                height: 100%;
-            }
+		#map {
+			height: 100%;
+		}
 
-            /* Optional: Makes the sample page fill the window. */
-            html, body {
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="map"></div>
-        <script>
-            let icons = ['food-icon.png', 'other-icon.png', 'lodging-icon.png', 'clothing-icon.png'];
-            icons = icons.map(src => {
-                return '/static/img/' + src;
-            });
-            let map;
-            let geoPos = {lat: 37.5495, lng: -77.4510};
-            let distance;
-            let filters;
-            let popups = [];
-            let usedIds = [];
-            let markerFromSpot = spot => {
-                let categories = Object.keys(spot.category);
-                let matched = false;
-                for (i = 0; i < categories.length; i++) {
-                    console.log(spot.category[categories[i]]);
-                    if (Number(spot.category[categories[i]].$numberInt) && Number(filters[i]))
-                        matched = true;
-                }
-                if (!matched) return;
-                spot.location.lng = Number(spot.location.long.$numberDouble);
-                spot.location.lat = Number(spot.location.lat.$numberDouble);
-                if (Number(spot.category.food.$numberInt)) icon = icons[0];
-                if (Number(spot.category.misc.$numberInt)) icon = icons[1];
-                if (Number(spot.category.lodging.$numberInt)) icon = icons[2];
-                if (Number(spot.category.clothes.$numberInt)) icon = icons[3];
-                let marker = new google.maps.Marker({
-                    map: map,
-                    position: spot.location,
-                    title: spot.name,
-                    icon
-                });
-                marker.description = spot.description;
-                marker.userName = spot.userName;
-                marker.reputation = spot.reputation;
-                marker.id = spot._id.$oid;
-                marker.timeBegin = Number(spot.timeBegin.$numberDouble);
-                marker.timeEnd = Number(spot.timeEnd.$numberDouble);
-                marker.upvotes = Number(spot.reputation.upvotes.$numberInt);
-                marker.downvotes = Number(spot.reputation.downvotes.$numberInt);
-                marker.addListener('click', function (e) {
-                    console.log(e);
-                    popUpAt(this);
-                });
+		/* Optional: Makes the sample page fill the window. */
+		html,
+		body {
+			height: 100%;
+			margin:0;
+		}
+	</style>
+</head>
 
-            }
+<body style="overflow:hidden">
+	<div id="map"></div>
+	<script>
+		let icons = ['food-icon.png', 'other-icon.png', 'lodging-icon.png', 'clothing-icon.png'];
+		icons = icons.map(src => {
+			return '/static/img/' + src;
+		});
+		let map;
+		let geoPos = { lat: 37.5495, lng: -77.4510 };
+		let distance;
+		let filters;
+		let popups = [];
+		let usedIds = [];
+		let markerFromSpot = spot => {
+			let categories = Object.keys(spot.category);
+			let matched = false;
+			for (i = 0; i < categories.length; i++) {
+				console.log(spot.category[categories[i]]);
+				if (Number(spot.category[categories[i]].$numberInt) && Number(filters[i]))
+					matched = true;
+			}
+			if (!matched) return;
+			spot.location.lng = Number(spot.location.long.$numberDouble);
+			spot.location.lat = Number(spot.location.lat.$numberDouble);
+			if (Number(spot.category.food.$numberInt)) icon = icons[0];
+			if (Number(spot.category.misc.$numberInt)) icon = icons[1];
+			if (Number(spot.category.lodging.$numberInt)) icon = icons[2];
+			if (Number(spot.category.clothes.$numberInt)) icon = icons[3];
+			let marker = new google.maps.Marker({
+				map: map,
+				position: spot.location,
+				title: spot.name,
+				icon
+			});
+			marker.description = spot.description;
+			marker.userName = spot.userName;
+			marker.reputation = spot.reputation;
+			marker.id = spot._id.$oid;
+			marker.timeBegin = Number(spot.timeBegin.$numberDouble);
+			marker.timeEnd = Number(spot.timeEnd.$numberDouble);
+			marker.upvotes = Number(spot.reputation.upvotes[Object.keys(spot.reputation.upvotes)[0]]);
+			marker.downvotes = Number(spot.reputation.downvotes[Object.keys(spot.reputation.downvotes)[0]]);
+			marker.addListener('click', function (e) {
+				console.log(e);
+				popUpAt(this);
+			});
 
-            function loadData() {
-                let urlData = location.href.substring(location.href.indexOf('?') + 1, location.href.length).split(",");
-                distance = urlData[0];
-                urlData.shift();
-                filters = urlData;
-                fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/nearby?lat=${geoPos.lat}&long=${geoPos.lng}&distance=${distance}`)
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    .then(function (data) {
-                        initMap(data);
-                    });
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: geoPos,
-                    zoom: 16
-                });
-                document.getElementById('map').addEventListener('click', (e) => {
-                    popups.forEach((popup) => {
-                        popup.style.top = innerHeight + 'px';
-                    });
-                });
-            }
-            function timeConverter(UNIX_timestamp) {
-                var a = new Date(UNIX_timestamp);
-                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                var year = a.getFullYear();
-                var month = months[a.getMonth()];
-                var date = a.getDate();
-                var hour = a.getHours();
-                var min = a.getMinutes();
-                var sec = a.getSeconds();
-                var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
-                return time;
-            }
+		}
 
-            let popUpAt = (marker) => {
-                let popup = document.createElement('div');
-                popup.style.position = 'absolute';
-                popup.style.height = '400px';
-                popup.style.width = '100%';
-                popup.style.left = '0px';
-                popup.style.backgroundColor = 'white';
-                popup.style.top = innerHeight + 'px';
-                popup.style.transition = 'top 1s';
-                popup.style.fontFamily = 'lobster, cursive';
-                let h1 = document.createElement('h1');
-                h1.innerText = marker.title;
-                h1.style.textAlign = 'center';
-                popup.append(h1);
-                let p = document.createElement('p');
-                p.style.fontSize = '20px';
-                p.innerText = marker.description;
-                popup.append(p);
-                let time = document.createElement('div');
-                time.style.fontSize = '20px';
-                time.innerText = `Event begins at ${timeConverter(marker.timeBegin)} and ends at ${timeConverter(marker.timeEnd)}.`
-                popup.append(time);
-                let votes = document.createElement('div');
-                votes.style.fontSize = '20px';
-                votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
-                popup.append(votes);
-                if (usedIds.indexOf(marker.id) === -1) {
-                    let upvote = document.createElement('img');
-                    upvote.src = '/static/img/tup.png';
-                    upvote.style.width = '50px';
-                    upvote.addEventListener('click', function (e) {
-                        fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/repchange?userId=13313&token=12121212&postId=${marker.id}&upvote=true`, {
-                            method: 'post',
-                            headers: {
-                                'Accept': 'application/json, text/plain, */*',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                userId: 13123213,
-                                token: '12321393213',
-                                postId: marker.id,
-                                upvote: 'true'
-                            })
-                        }).then(res => res.json())
-                            .then(res => console.log(res));
-                        marker.upvotes++;
-                        votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
-                        downvote.remove();
-                        this.remove();
-                        usedIds.push(marker.id);
+		function loadData() {
+			let urlData = location.href.substring(location.href.indexOf('?') + 1, location.href.length).split(",");
+			distance = urlData[0];
+			urlData.shift();
+			filters = urlData;
+			fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/nearby?lat=${geoPos.lat}&long=${geoPos.lng}&distance=${distance}`)
+				.then(function (response) {
+					return response.json();
+				})
+				.then(function (data) {
+					initMap(data);
+				});
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: geoPos,
+				zoom: 16
+			});
+			document.getElementById('map').addEventListener('click', (e) => {
+				popups.forEach((popup) => {
+					popup.style.top = innerHeight + 'px';
+				});
+			});
+		}
+		function timeConverter(UNIX_timestamp) {
+			var a = new Date(UNIX_timestamp);
+			var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			var year = a.getFullYear();
+			var month = months[a.getMonth()];
+			var date = a.getDate();
+			var hour = a.getHours();
+			var min = a.getMinutes();
+			var sec = a.getSeconds();
+			var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+			return time;
+		}
 
-                    });
-                    popup.append(upvote);
-                    let downvote = document.createElement('img');
-                    downvote.src = '/static/img/tdow.png';
-                    downvote.style.width = '50px';
-                    downvote.addEventListener('click', function (e) {
-                        fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/repchange?userId=13313&token=12121212&postId=${marker.id}&downvote=true`, {
-                            method: 'post',
-                            headers: {
-                                'Accept': 'application/json, text/plain, */*',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                userId: 13123213,
-                                token: '12321393213',
-                                postId: marker.id,
-                                downvote: 'true'
-                            })
-                        }).then(res => res.json())
-                            .then(res => console.log(res));
-                        marker.downvotes++;
-                        votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
-                        upvote.remove();
-                        this.remove();
-                        usedIds.push(marker.id);
+		let popUpAt = (marker) => {
+			let popup = document.createElement('div');
+			popup.className = "popUpWindow";
+			let h1 = document.createElement('h1');
+			h1.innerText = marker.title;
+			h1.style.textAlign = 'center';
+			h1.style.fontSize = '50px';
+			h1.className = 'infoHeader';
+			let timeIcon = document.createElement('i');
+			timeIcon.className = "far fa-clock";
+			let timeText = document.createElement('h3');
+			timeText.className="timeText";
+			timeText.innerHTML='<i class="far fa-clock"></i>  ' + `${timeConverter(marker.timeBegin)} - ${timeConverter(marker.timeEnd)}.`
+			popup.append(h1);
+			popup.append(timeText);
+			let p = document.createElement('p');
+			p.style.fontSize = '20px';
+			p.innerText = marker.description;
+			p.className = 'popUpContent';
+			popup.append(p);
+			let votes = document.createElement('div');
+			votes.style.fontSize = '20px';
+			votes.style.paddingLeft ="45px";
+			votes.innerHTML = `<div class="ratings" style="margin-left:15px;"><span class="thumbsUp">${marker.upvotes}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="thumbsDown">${marker.downvotes}</span>`;
 
-                    });
-                    popup.append(downvote);
-                }
-                document.body.appendChild(popup);
-                popup.style.top = innerHeight - 600 + 'px';
-                setTimeout(() => {
-                    popups.push(popup)
-                }, 1);
+			popup.append(votes);
+			if (usedIds.indexOf(marker.id) === -1) {
+				let upvote = document.createElement('img');
+				upvote.src = '/static/img/tup.png';
+				upvote.id = 'upvote-img'
+				upvote.style.paddingLeft = "45px";
+				upvote.style.width = '50px';
+				upvote.addEventListener('click', function (e) {
+					fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/repchange?userId=13313&token=12121212&postId=${marker.id}&upvote=true`, {
+						method: 'post',
+						headers: {
+							'Accept': 'application/json, text/plain, */*',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							userId: 13123213,
+							token: '12321393213',
+							postId: marker.id,
+							upvote: 'true'
+						})
+					}).then(res => res.json())
+						.then(res => console.log(res));
+					marker.upvotes++;
+					// votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
+					votes.innerHTML = `<div class="ratings" style="margin-left:15px;">${marker.upvotes}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${marker.downvotes}</div>`;
+					downvote.remove();
+					this.src = "[check_mark_src]"
+					usedIds.push(marker.id);
 
-            };
+				});
+				popup.append(upvote);
+				let downvote = document.createElement('img');
+				downvote.src = '/static/img/tdow.png';
+				downvote.style.width = '50px';
+				downvote.addEventListener('click', function (e) {
+					fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/repchange?userId=13313&token=12121212&postId=${marker.id}&downvote=true`, {
+						method: 'post',
+						headers: {
+							'Accept': 'application/json, text/plain, */*',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							userId: 13123213,
+							token: '12321393213',
+							postId: marker.id,
+							downvote: 'true'
+						})
+					}).then(res => res.json())
+						.then(res => console.log(res));
+					marker.downvotes++;
+					votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
+					upvote.remove();
+					this.src = ["[cross_img_url]"];
+					usedIds.push(marker.id);
+					
+				});
+				popup.append(downvote);
+			}
+			document.body.appendChild(popup);
+			popup.style.top = innerHeight - 400 + 'px';
+			setTimeout(() => {
+				popups.push(popup)
+			}, 1);
 
-            function initMap(spots) {
-                spots.forEach(spot => {
-                    markerFromSpot(spot);
-                });
+		};
 
-                // Create a map object and specify the DOM element
-                // for display.
+		function initMap(spots) {
+			spots.forEach(spot => {
+				markerFromSpot(spot);
+			});
 
-                // Create a marker and set its position.
+			// Create a map object and specify the DOM element
+			// for display.
 
-            }
+			// Create a marker and set its position.
 
-        </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBngmSvyovUgFkNdwScaO4iFlWAu2ajpDQ&callback=loadData"
-                async defer></script>
-    </body>
+		}
+
+	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBngmSvyovUgFkNdwScaO4iFlWAu2ajpDQ&callback=loadData" async
+	 defer></script>
+</body>
+
 </html>
