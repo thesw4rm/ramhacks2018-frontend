@@ -1,0 +1,51 @@
+.categoryFood{
+    background-image: url("/static/img/food.jpg");
+    background-size:350px;
+    border-radius: 15px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    color:white;
+}
+
+.categoryLodging{
+    background-image: url("/static/img/lodging.jpg");
+    background-size:350px;
+    border-radius:15px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    color:white;
+}
+
+.categoryClothing{
+    background-image: url("/static/img/clothing.jpg");
+    background-size:350px;
+    border-radius:15px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    color:white;
+}
+
+.categoryOther{
+    background-image: url("/static/img/other.jpg");
+    background-size:350px;
+    border-radius:15px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    color:white;
+}
+.allCat{
+    background-image: url("/static/img/maps.jpg");
+    border-radius:15px;
+    width:100%;
+    height:100%;
+    text-align:center;
+    color:white;
+}
+
+.allCat h3{
+    color:black;
+}

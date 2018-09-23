@@ -1,116 +1,87 @@
-<!DOCTYPE HTML>
-<!--
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
--->
-<html>
-	<head>
-		<title>Help Hunter</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
-		<!-- Wrapper -->
-			<div id="wrapper">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
 
-				<!-- Header -->
-					<header id="header">
-						<div class="inner">
+    <!-- Local CSS -->
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <title>Help Hunter</title>
+</head>
 
-							<!-- Logo -->
-								<a href="index.html" class="logo">
-									<span class="title"></span>
-								</a>
+<body style="background-color:#2469d8">
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-6">
+                <div class="py-3">
+                    <h3>Help Hunter</h3>
+                </div>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-3">
+                <div class="categoryFood py-5">
+                    <h1>Food</h1>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="categoryLodging py-5">
+                    <h1>Lodging</h1>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-3">
+                <div class="categoryClothing py-5">
+                    <h1>Clothing</h1>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="categoryOther py-5">
+                    <h1>Other</h1>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-6">
+                <div class="allCat py-3">
+                    <h3>See Map</h3>
+                </div>
+            </div>
+        </div>
+    </div>
 
-							<!-- Nav -->
-								<nav>
-									<ul>
-										<li><a href="#menu">Menu</a></li>
-									</ul>
-								</nav>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+        <script src="/static/js/rangeslider.min.js"></script>
+        <script>
+            // Initialize a new plugin instance for all
+            // e.g. $('input[type="range"]') elements.
+            $('input[type="range"]').rangeslider();
+        
+            // Destroy all plugin instances created from the
+            // e.g. $('input[type="range"]') elements.
+            $('input[type="range"]').rangeslider('destroy');
+        
+            // Update all rangeslider instances for all
+            // e.g. $('input[type="range"]') elements.
+            // Usefull if you changed some attributes e.g. `min` or `max` etc.
+            $('input[type="range"]').rangeslider('update', true);
+        </script>
 
-						</div>
-					</header>
+</body>
 
-				<!-- Menu -->
-					<nav id="menu">
-						<h2>Menu</h2>
-						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li><a href="generic.html">Ipsum veroeros</a></li>
-							<li><a href="generic.html">Tempus etiam</a></li>
-							<li><a href="generic.html">Consequat dolor</a></li>
-						</ul>
-					</nav>
-
-				<!-- Main -->
-					<div id="main">
-						<div class="inner">
-							<header>
-								<h1>Welcome to Help Hunter</h1>
-								<p>Yuh.</p>
-							</header>
-							<section class="tiles">
-								<article class="style1">
-									<span class="image">
-										<img src="images/pic01.jpg" alt="" />
-									</span>
-									<a href="generic.html">
-										<h2>Food</h2>
-										<div class="content">
-											<p>Hey</p>
-										</div>
-									</a>
-								</article>
-								<article class="style2">
-									<span class="image">
-										<img src="images/pic02.jpg" alt="" />
-									</span>
-									<a href="generic.html">
-										<h2>Lodging</h2>
-										<div class="content">
-											<p>Hey</p>
-										</div>
-									</a>
-								</article>
-								<article class="style3">
-									<span class="image">
-										<img src="images/pic03.jpg" alt="" />
-									</span>
-									<a href="generic.html">
-										<h2>Miscellaneous</h2>
-										<div class="content">
-											<p>Hey</p>
-										</div>
-									</a>
-								</article>
-								
-							</section>
-						</div>
-					</div>
-
-				<!-- Footer -->
-					<footer id="footer">
-						<div class="inner">
-							
-							<section>
-								<h2>Footer</h2>
-							</section>
-							<ul class="copyright">
-								<li>&copy;Help Hunter 2018 All rights reserved</li>
-							</ul>
-						</div>
-					</footer>
-
-			</div>
-
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-
-	</body>
 </html>
