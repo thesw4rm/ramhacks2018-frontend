@@ -20,6 +20,7 @@
 </head>
 
 <body style="background-color:#8B6FFF">
+	<div id="menu">
     <div class="container-fluid">
         <div class="header d-flex justify-content-center py-5">
             <h1 class="headerText">Help Hunter</h1>
@@ -62,13 +63,15 @@
         <br/>
         <div class="row d-flex justify-content-center">
             <div class="col-sm-8">
-                <a href="">
+                <div id="toMap">
                 <div class="allCat py-3">
                     See Map
                 </div>
-                </a>
+                </div>
             </div>
         </div>
+    </div>
+    </div>
     </div>
 
     <!-- Optional JavaScript -->
@@ -88,6 +91,46 @@
         slider.oninput = function () {
             output.innerHTML = this.value;
         }
+	let filters = [0,0,0,0];
+	document.getElementById('toMap').addEventListener('click',(e)=>{
+		location.href = `map2.html?${slider.value},${String(filters)}`;
+	});
+	document.getElementsByClassName('categoryFood')[0].addEventListener('click',function(e){
+		if(this.style.opacity === '0.5'){
+			filters[2] = 0;
+			this.style.opacity = 1;
+		} else {
+			filters[2] = 1;
+			this.style.opacity = 0.5;
+		}
+	});
+	document.getElementsByClassName('categoryLodging')[0].addEventListener('click',function(e){
+		if(this.style.opacity === '0.5'){
+			filters[1] = 0;
+			this.style.opacity = 1;
+		} else {
+			filters[1] = 1;
+			this.style.opacity = 0.5;
+		}
+	});
+	document.getElementsByClassName('categoryClothing')[0].addEventListener('click',function(e){
+		if(this.style.opacity === '0.5'){
+			filters[3] = 0;
+			this.style.opacity = 1;
+		} else {
+			filters[3] = 1;
+			this.style.opacity = 0.5;
+		}
+	});
+	document.getElementsByClassName('categoryOther')[0].addEventListener('click',function(e){
+		if(this.style.opacity === '0.5'){
+			filters[0] = 0;
+			this.style.opacity = 1;
+		} else {
+			filters[0] = 1;
+			this.style.opacity = 0.5;
+		}
+	});
     </script>
 
     <script>

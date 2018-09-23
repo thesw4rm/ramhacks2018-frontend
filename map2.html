@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+<script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.13/stitch.js"></script>
+	<style>
+/* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+	</style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+	    let icons = ['food-icon.png','other-icon.png','lodging-icon.png','clothing-icon.png'];
+	    icons.map(src=>{
+		    return '/static/img/' + src;
+	    });
+	    let map;
+	    let geoPos = {lat:37.521339,lng:-77.473405};
+	    let distance;
+	    let filters;
+	    let popups = [];
+	    let usedIds = [];
+	    let markerFromSpot = spot=>{
+		let categories = Object.keys(spot.category);
+		let matched = false;
+		for(i=0;i<categories.length;i++){
+			console.log(spot.category[categories[i]]);
+			if(Number(spot.category[categories[i]].$numberInt) && Number(filters[i]))
+				matched = true;
+		}
+		if(!matched) return;
+		spot.location.lng = Number(spot.location.long.$numberDouble);
+		spot.location.lat = Number(spot.location.lat.$numberDouble);
+		if(Number(spot.category.food.$numberInt)) icon = icons[0];
+		if(Number(spot.category.misc.$numberInt)) icon = icons[1];
+		if(Number(spot.category.lodging.$numberInt)) icon = icons[2];
+		if(Number(spot.category.clothes.$numberInt)) icon = icons[3];
+        	let marker = new google.maps.Marker({
+        	  map: map,
+        	  position: spot.location,
+        	  title: spot.name,
+		  icon
+        	});
+		marker.description = spot.description;
+		marker.userName = spot.userName;
+		marker.reputation = spot.reputation;
+		marker.id = spot._id.$oid;
+		marker.timeBegin = Number(spot.timeBegin.$numberDouble);
+		marker.timeEnd = Number(spot.timeEnd.$numberDouble);
+		marker.upvotes = Number(spot.reputation.upvotes.$numberInt);
+		marker.downvotes = Number(spot.reputation.downvotes.$numberInt);
+		marker.addListener('click',function(e){
+			console.log(e);
+			popUpAt(this);	
+		});
+	
+	    }
+	function loadData(){
+		let urlData = location.href.substring(location.href.indexOf('?')+1,location.href.length).split(","); 
+		distance = urlData[0];
+		urlData.shift();
+		filters = urlData;
+		fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/nearby?lat=${geoPos.lat}&long=${geoPos.lng}&distance=${distance}`)
+ 		 .then(function(response) {
+	     		 return response.json();
+	    	  })
+  		 .then(function(data) {
+	      		initMap(data);
+	    	  });
+        	  map = new google.maps.Map(document.getElementById('map'), {
+			  center: geoPos,
+        	    	zoom: 16
+		  });
+		  document.getElementById('map').addEventListener('click',(e)=>{
+			popups.forEach((popup)=>{
+				popup.style.top = innerHeight + 'px';
+			});
+		  });
+	}
+	function timeConverter(UNIX_timestamp){
+	  var a = new Date(UNIX_timestamp);
+	  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+	  var year = a.getFullYear();
+	  var month = months[a.getMonth()];
+	  var date = a.getDate();
+	  var hour = a.getHours();
+	  var min = a.getMinutes();
+	  var sec = a.getSeconds();
+	  var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+	  return time;
+	}
+	    let popUpAt = (marker)=>{
+		let popup = document.createElement('div');
+		popup.style.position = 'absolute';
+		popup.style.height = '600px';
+		popup.style.width = innerWidth + 'px';
+		popup.style.left = '0px';
+		popup.style.backgroundColor = 'white';
+		popup.style.top = innerHeight + 'px';
+		popup.style.transition = 'top 1s';
+		popup.style.fontFamily = 'lobster, cursive';
+		let h1 = document.createElement('h1');
+		h1.innerText=marker.title;
+		h1.style.textAlign = 'center';
+		popup.append(h1);
+		let p = document.createElement('p');
+		p.style.fontSize = '20px';
+		p.innerText = marker.description; 
+		popup.append(p);
+		let time = document.createElement('div');
+		time.style.fontSize = '20px';
+		time.innerText = `Event begins at ${timeConverter(marker.timeBegin)} and ends at ${timeConverter(marker.timeEnd)}.`
+		popup.append(time);
+		let votes = document.createElement('div');
+		votes.style.fontSize = '20px';
+		votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
+		popup.append(votes);
+		if(usedIds.indexOf(marker.id) === -1){
+			let upvote = document.createElement('img');
+			upvote.src = 'tup.png';
+			upvote.style.width = '50px';
+			upvote.addEventListener('click',function(e){
+				fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/repchange?userId=13313&token=12121212&postId=${marker.id}&upvote=true`, {
+				  method: 'post',
+				  headers: {
+				    'Accept': 'application/json, text/plain, */*',
+				    'Content-Type': 'application/json'
+				  },
+				  body: JSON.stringify({
+					  userId:13123213,
+					  token:'12321393213',
+					  postId:marker.id,
+					  upvote:'true'
+				  })
+				}).then(res=>res.json())
+				  .then(res => console.log(res));
+				marker.upvotes++;
+				votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
+			    	downvote.remove();
+			    	this.remove();
+			    	usedIds.push(marker.id);
+
+			});
+			popup.append(upvote);
+			let downvote = document.createElement('img');
+			downvote.src = 'tdow.png';
+			downvote.style.width = '50px';
+			downvote.addEventListener('click',function(e){
+				fetch(`https://webhooks.mongodb-stitch.com/api/client/v2.0/app/helphunter-yshqt/service/theboiservice/incoming_webhook/repchange?userId=13313&token=12121212&postId=${marker.id}&downvote=true`, {
+				  method: 'post',
+				  headers: {
+				    'Accept': 'application/json, text/plain, */*',
+				    'Content-Type': 'application/json'
+				  },
+				  body: JSON.stringify({
+					  userId:13123213,
+					  token:'12321393213',
+					  postId:marker.id,
+					  downvote:'true'
+				  })
+				}).then(res=>res.json())
+				  .then(res => console.log(res));
+				marker.downvotes++;
+				votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
+				upvote.remove();
+				this.remove();
+			    	usedIds.push(marker.id);
+
+			});
+			popup.append(downvote);
+		}
+		document.body.appendChild(popup);
+		popup.style.top = innerHeight - 600 + 'px';
+		    setTimeout(()=>{popups.push(popup)},1);
+
+	    };
+      function initMap(spots) {
+	      spots.forEach(spot=>{
+		      window.test = spot;
+		console.log(spot);
+		markerFromSpot(spot);
+	      });
+        var myLatLng = {lat: 69, lng: -69};
+
+        // Create a map object and specify the DOM element
+        // for display.
+
+        // Create a marker and set its position.
+        var marker = new google.maps.Marker({
+          map: map,
+          position: myLatLng,
+          title: '',
+	  icon: 'icon.png'
+        });
+	marker.addListener('click',(e)=>{
+		console.log(e);
+		popUpAt(e.wa.clientX,e.wa.clientY);	
+	});
+      }
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBngmSvyovUgFkNdwScaO4iFlWAu2ajpDQ&callback=loadData"
+        async defer></script>
+  </body>
+</html>
