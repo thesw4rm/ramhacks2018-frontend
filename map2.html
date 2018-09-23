@@ -6,6 +6,8 @@
 	<link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 	<script src="https://s3.amazonaws.com/stitch-sdks/js/bundles/4.0.13/stitch.js"></script>
+	<script
+			src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<style>
 		/* Always set the map height explicitly to define the size of the div
                    * element that contains the map. */
@@ -110,6 +112,9 @@
 			let popup = document.createElement('div');
 			popup.className = "popUpWindow";
 			let h1 = document.createElement('h1');
+			let backBtn = document.createElement('a');
+            backBtn.className = "backBtn";
+            backBtn.innerText = "Go Back";
 			h1.innerText = marker.title;
 			h1.style.textAlign = 'center';
 			h1.style.fontSize = '50px';
@@ -130,8 +135,11 @@
 			votes.style.fontSize = '20px';
 			votes.style.paddingLeft ="45px";
 			votes.innerHTML = `<div class="ratings" style="margin-left:15px;"><span class="thumbsUp">${marker.upvotes}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="thumbsDown">${marker.downvotes}</span>`;
-
-			popup.append(votes);
+            popup.append(backBtn);
+            popup.append(votes);
+            $(backBtn).click((e) => {
+                $(".popUpWindow").remove();
+			});
 			if (usedIds.indexOf(marker.id) === -1) {
 				let upvote = document.createElement('img');
 				upvote.src = '/static/img/tup.png';
@@ -196,6 +204,7 @@
 			}, 1);
 
 		};
+
 
 		function initMap(spots) {
 			spots.forEach(spot => {
