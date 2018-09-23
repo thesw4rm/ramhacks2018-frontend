@@ -155,9 +155,9 @@
 						.then(res => console.log(res));
 					marker.upvotes++;
 					// votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
-					votes.innerHTML = `<div class="ratings" style="margin-left:15px;">${marker.upvotes}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${marker.downvotes}</div>`;
+					votes.innerHTML = `<div class="ratings" style="margin-left:15px;"><span class="thumbsUp">${marker.upvotes}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="thumbsDown">${marker.downvotes}</span>`;
 					downvote.remove();
-					this.src = "[check_mark_src]"
+					this.src = "/static/img/check.png"
 					usedIds.push(marker.id);
 
 				});
@@ -181,9 +181,9 @@
 					}).then(res => res.json())
 						.then(res => console.log(res));
 					marker.downvotes++;
-					votes.innerText = `${marker.upvotes} upvotes ${marker.downvotes} downvotes`;
-					upvote.remove();
-					this.src = ["[cross_img_url]"];
+					votes.innerHTML = `<div class="ratings" style="margin-left:15px;"><span class="thumbsUp">${marker.upvotes}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="thumbsDown">${marker.downvotes}</span>`;
+					upvote.style.opacity = "0";
+					this.src = ["/static/img/cross.png"];
 					usedIds.push(marker.id);
 					
 				});
