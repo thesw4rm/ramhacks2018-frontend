@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -9,48 +10,57 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
         crossorigin="anonymous">
 
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+
+
     <!-- Local CSS -->
     <link rel="stylesheet" type="text/css" href="/static/css/main.css">
     <title>Help Hunter</title>
 </head>
 
-<body style="background-color:#2469d8">
+<body style="background-color:#5CDB95">
     <div class="container-fluid">
-        <div class="row d-flex justify-content-center">
-            <div class="col-sm-6">
-                <div class="py-3">
-                    <h3>Help Hunter</h3>
-                </div>
+        <div class="header d-flex justify-content-center py-5">
+            <h1 class="headerText">Help Hunter</h1>
+        </div>
+    </div>
+    <br/>
+    <div class="container-fluid">
+        <div class="container d-flex justify-content-center">
+            <div class="slidecontainer">
+                <input type="range" min="5" max="25" value="5" class="slider" id="myRange">
+                <h5 class="miles"><span id="demo"></span> Miles</h5>
             </div>
         </div>
         <div class="row d-flex justify-content-center">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <div class="categoryFood py-5">
-                    <h1>Food</h1>
+                  
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <div class="categoryLodging py-5">
-                    <h1>Lodging</h1>
+                    <h5>Lodging</h5>
                 </div>
             </div>
         </div>
         <br>
         <div class="row d-flex justify-content-center">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <div class="categoryClothing py-5">
-                    <h1>Clothing</h1>
+                    <h5>Clothing</h5>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <div class="categoryOther py-5">
-                    <h1>Other</h1>
+                    <h5>Other</h5>
                 </div>
             </div>
         </div>
         <br>
         <div class="row d-flex justify-content-center">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
                 <div class="allCat py-3">
                     <h3>See Map</h3>
                 </div>
@@ -66,22 +76,29 @@
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-        <script src="/static/js/rangeslider.min.js"></script>
-        <script>
-            // Initialize a new plugin instance for all
-            // e.g. $('input[type="range"]') elements.
-            $('input[type="range"]').rangeslider();
-        
-            // Destroy all plugin instances created from the
-            // e.g. $('input[type="range"]') elements.
-            $('input[type="range"]').rangeslider('destroy');
-        
-            // Update all rangeslider instances for all
-            // e.g. $('input[type="range"]') elements.
-            // Usefull if you changed some attributes e.g. `min` or `max` etc.
-            $('input[type="range"]').rangeslider('update', true);
-        </script>
+    <script>
+        // Initialize a new plugin instance for all
+        // e.g. $('input[type="range"]') elements.
+        $('input[type="range"]').rangeslider();
 
+        // Destroy all plugin instances created from the
+        // e.g. $('input[type="range"]') elements.
+        $('input[type="range"]').rangeslider('destroy');
+
+        // Update all rangeslider instances for all
+        // e.g. $('input[type="range"]') elements.
+        // Usefull if you changed some attributes e.g. `min` or `max` etc.
+        $('input[type="range"]').rangeslider('update', true);
+    </script>
+    <script>
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("demo");
+        output.innerHTML = slider.value;
+
+        slider.oninput = function () {
+            output.innerHTML = this.value;
+        }
+    </script>
 </body>
 
 </html>
