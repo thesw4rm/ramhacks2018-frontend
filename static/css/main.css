@@ -1,11 +1,11 @@
 
 
 .header{
-    background-color:white;
+    background-color:#ffffff;
 }
 
 .headerText{
-    color:#4CAF50;
+    color:#8B6FFF;
     font-family: 'Lobster', cursive;
     font-size:50px;
 }
@@ -17,6 +17,13 @@
     height:100%;
     text-align:center;
     color:white;
+}
+
+
+.selected-category{
+    border-style:bold;
+    border-color:white;
+    border-width:50px;
 }
 
 .labelText{
