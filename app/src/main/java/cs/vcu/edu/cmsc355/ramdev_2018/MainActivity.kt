@@ -14,9 +14,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                WindowManager.LayoutParams.FLAG_FULLSCREEN)
         val myWebView = WebView(applicationContext)
-        myWebView.settings.javaScriptEnabled = true;
+        myWebView.settings.javaScriptEnabled = true
+        myWebView.clearCache(true)
         setContentView(myWebView)
         myWebView.loadUrl("https://helphunter.tk/")
     }
